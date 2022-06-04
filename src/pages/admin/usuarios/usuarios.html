@@ -1,0 +1,167 @@
+<q-page>
+
+  <div class="row">
+    <div class="col">
+      <q-select label="Escuela" v-model="busqueda.escuela" :options="listaescuelas"></q-select>
+    </div>
+    <div class="col">
+      <q-select label="Tipo" v-model="busqueda.tipo" :options="tipos"></q-select>
+    </div>
+    <div class="col" v-if="busqueda.tipo==='Alumno'">
+      <q-select label="Grado" v-model="busqueda.grado" :options="grados"></q-select>
+    </div>
+    <div class="col" v-if="busqueda.tipo==='Alumno'">
+      <q-select label="Grupo" v-model="busqueda.grupo" :options="grupos"></q-select>
+    </div>
+    <div class="col" v-if="busqueda.tipo==='Alumno'">
+      <q-select label="Nivel" v-model="busqueda.nivel" :options="nivel"></q-select>
+    </div>
+
+   
+    
+    <div class="col">
+      <q-btn color="primary" @click="buscarlista()">Buscar</q-btn>
+
+    </div>
+  </div>
+
+
+
+    <q-table
+    :data="data"
+    :columns="columns"
+    :filter="filter"
+  >
+
+
+  <template v-slot:top>
+    <q-input borderless dense debounce="300" outlined v-model="filter" placeholder="Search">
+      <template v-slot:append>
+        <q-icon name="search" />
+      </template>
+    </q-input>
+  </template>
+
+
+    <template v-slot:body="props">
+         <q-tr :props="props">
+           
+          <q-td v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          >
+          {{col.value}}
+          </q-td>   
+          <q-td>
+            <q-btn class="info" @click="editaEscuela(props)">Editar</q-btn>
+          </q-td>
+        </q-tr>
+    </template>
+
+</q-table>
+
+<q-dialog
+v-model="editarescuela"
+>
+<q-card style="width: 100%; max-width: 600px;">
+  <q-card-section>
+    ID REGISTRO:<b>{{dataeditescuela.uid}}</b>
+    <q-input outlined v-model="dataeditescuela.nombre" label="Nombre" />
+    <q-select outlined v-model="dataeditescuela.escuela" label="Escuela" :options="listaescuelas"/>
+    <q-input outlined v-model="dataeditescuela.matricula" label="Matrícula" />
+    <q-input outlined v-model="dataeditescuela.correo" label="Correo" />
+    <q-select outlined v-model="dataeditescuela.permiso" :options="[0,1,2,3]" label="Permiso" />
+    <q-select outlined v-model="dataeditescuela.tipo" label="Tipo" :options="['Alumno','Tutor','Profesor','Sistem']" />
+    <q-select outlined v-model="dataeditescuela.online" label="Online"  :options="[true,false]" />
+    
+
+    <q-input outlined v-if="dataeditescuela.tipo==='Alumno'" v-model="dataeditescuela.grupoUB" label="grupo de Aula"  /> <q-btn color="primary" v-if="dataeditescuela.tipo==='Alumno'" @click="genGrupoUB()">Generar Grupo de aula</q-btn>
+    <q-select v-if="dataeditescuela.tipo==='Alumno'" outlined v-model="dataeditescuela.grado" label="Grado" :options="grados" />
+
+
+    <q-select v-if="dataeditescuela.tipo==='Alumno'" outlined v-model="dataeditescuela.grupo" label="Grupo" :options="grupos" />
+
+
+    <q-select v-if="dataeditescuela.tipo==='Alumno'" outlined v-model="dataeditescuela.nivel" label="Nivel" :options="nivel" />
+
+    <div class="col" v-if="dataeditescuela.tipo==='Profesor'">
+      <div style="width:100%; background-color:blue; color:white;" >Grupos Asignados</div>
+
+      <div class="row" v-if="dataeditescuela.grupos"> 
+        <div class="col-6" v-for="(key,index) in dataeditescuela.grupos" >
+
+          <q-chip class="glossy" color="orange" text-color="white" style="width:100%;" >
+            {{index+1}}.- {{key.grado}} {{key.grupo}} {{key.nivel}} {{key.escuela}} {{key.materia}}
+            <q-btn color="red" @click="deleteGrupo(key)" icon="delete" ></q-btn>
+          </q-chip>
+            
+        </div>
+      </div>
+
+      <q-dialog v-model="addGruposDialog">
+        <q-card style="width: 100%; max-width: 400px;">
+          <q-card-section>
+           
+            <q-select v-model="addGrupos.grado" label="Grado"  :options="grados"></q-select>
+            <q-select v-model="addGrupos.grupo" label="Grupo"  :options="grupos"></q-select>
+            <q-select v-model="addGrupos.nivel" label="Nivel"  :options="nivel"></q-select>
+            <q-input v-model="addGrupos.materia" label="Materia"  ></q-input>
+            <q-select v-model="addGrupos.escuela" label="Escuela"  :options="listaescuelas"></q-select>
+
+            <q-btn color="primary" @click="GuardarGrupo()">Guardar</q-btn>
+          </q-card-section>     
+        </q-card>
+      </q-dialog>
+
+      <q-btn color="primary" icon="add" @click="addGruposDialog=true"></q-btn>
+      
+    </div>
+
+
+    <q-select outlined v-model="dataeditescuela.edoactividad" label="Estado Cuenta" :options="statusperfil" />
+    <q-input outlined v-model="dataeditescuela.teléfono" label="Teléfono" />
+    <q-btn class="bg-indigo-6 text-white" @click="guardarCambios()" >Guardar Cambios</q-btn>
+    <q-btn color="red" @click="eliminarUsuario()">Eliminar</q-btn>
+  </q-card-section>
+</q-card>
+</q-dialog>
+
+<q-dialog v-model="addusuario">
+  <q-card style="width: 100%; max-width: 800px;">
+    <q-card-section>
+    <div color="primary" class="white--text" style="width: 100%;">
+      Registro de usuario
+      </div>
+
+      <q-input outlined v-model="reguser.nombre" label="Nombre" />
+      <q-select outlined v-model="reguser.escuela" label="Escuela" :options="listaescuelas"/>
+      <q-input outlined v-model="reguser.matricula" label="Matrícula" />
+      <q-input outlined v-model="reguser.password" label="Contraseña" type="password" />
+      <q-input outlined v-model="reguser.correo" label="Correo" />
+      <q-select outlined v-model="reguser.permiso" :options="[0,1,2,3]" label="Permiso" />
+      <q-select outlined v-model="reguser.tipo" label="Tipo" :options="['Alumno','Tutor','Profesor','Sistem']" />
+      <q-select outlined v-model="reguser.online" label="Online"  :options="[true,false]" />
+      <q-select v-if="reguser.tipo==='Alumno'" outlined v-model="reguser.grado" label="Grado" :options="grados" />
+
+
+    <q-select v-if="reguser.tipo==='Alumno'" outlined v-model="reguser.grupo" label="Grupo" :options="grupos" />
+
+
+    <q-select v-if="reguser.tipo==='Alumno'" outlined v-model="reguser.nivel" label="Nivel" :options="nivel" />
+
+    <q-select outlined v-model="reguser.edoactividad" label="Estado Cuenta" :options="statusperfil" />
+    <q-input outlined v-model="reguser.teléfono" label="Teléfono" />
+    <q-btn class="bg-indigo-6 text-white" @click="crearUsuario()" >Guardar Cambios</q-btn>
+
+
+    </q-card-section>
+  </q-card>
+</q-dialog>
+
+
+<q-btn round color="primary" class="fixed" icon="add" @click="addusuario=true" />
+
+
+
+
+</q-page> 

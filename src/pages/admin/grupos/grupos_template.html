@@ -1,0 +1,66 @@
+<div>
+       <q-select :options="escuelas" v-model="escselect.escuela" @input="cargalistadeGrupo()"  label="Seleccione la escuela"></q-select>
+      
+       <div v-if="escselect.escuela" class="q-pa-md">
+         <q-table 
+         v-if="listabla.length>0"
+           :title="'Grupos de '+escselect.escuela"
+           dense
+           :data="listabla"
+           :columns="columns"
+           row-key="name"
+         >
+         <template v-slot:body="props">
+            <q-tr :props="props">
+              
+             <q-td v-for="col in props.cols"
+             :key="col.name"
+             :props="props"
+             >
+             {{col.value}}
+             </q-td>   
+             <q-td>
+               <q-btn class="info" @click="editarGrupo(props)">Editar</q-btn>
+             </q-td>
+           </q-tr>
+       </template>
+         </q-table>
+         <q-dialog
+            v-model="addgrupo"          
+         >
+            <q-card>
+               <q-card-section>
+                  <div class="text-h4 q-mb-md">Nuevo Grupo</div>
+               <q-separator></q-separator>
+                  <q-select label="Grado" v-model="creaGrupo.grado" :options="grados" ></q-select>
+                  <q-select label="Grupo" v-model="creaGrupo.grupo" :options="grupos" ></q-select>
+                  <q-select label="Nivel" v-model="creaGrupo.nivel" :options="niveles" ></q-select>
+                  <q-select label="Profesor" v-model="creaGrupo.profesor" :options="profesores"></q-select>
+                  <q-select label="Turno" v-model="creaGrupo.turno" :options="['matutino','vespertino']"></q-select>
+                  <q-btn color="primary" @click="creaNuevoGrupo()">Guardar Grupo</q-btn>
+               </q-card-section>
+            </q-card>
+         </q-dialog>
+
+         <q-dialog v-model="editGrupo">
+            <q-card>
+               <q-card-section>
+                  <div class="text-h4 q-mb-md">Editar Grupo</div>
+                  <q-separator></q-separator>
+                  <h2><b>{{edtGrupo.nombre}}</b></h2>
+                  <h5><b>ID:{{edtGrupo.id}}</b></h5>
+                  <q-select label="Nombre del Profesor" v-model="edtGrupo.profesor" :options="profesores"></q-select>
+                  <q-select label="Turno" v-model="edtGrupo.turno" :options="['matutino','vespertino']" ></q-select> 
+                  <q-btn color="primary" @click="guardarCambioGrupo()" >Guardar Cambios</q-btn>               
+                  <q-btn color="red" @click="elimiarGrupo()" >Eliminar</q-btn>
+                  </q-card-section>
+            </q-card>
+         </q-dialog>
+
+         <div v-if="listabla.length===0">
+            No hay listado de grupos
+         </div>
+      <q-btn round color="primary" class="fixed" icon="add" @click="addgrupo=true" />
+   </div>
+  
+</div>

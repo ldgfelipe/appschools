@@ -1,0 +1,28 @@
+<div>
+    <q-list bordered>
+        <q-item v-if="contact.online===true && contact.iddoc!==datosuser.iddoc" v-for="(contact,index) in contacts" :key="contact.id" class="q-my-sm" :to="'/chat/'+contact.uid" clickable v-ripple>
+          <q-item-section avatar>
+            <q-avatar color="primary" text-color="white">
+              {{ contact.nombre.charAt(0)}} 
+            </q-avatar>
+          </q-item-section>
+  
+          <q-item-section>
+            <q-item-label>{{ contact.nombre }}</q-item-label>
+            <q-item-label caption lines="1">{{ contact.escuela }} {{contact.tipo}} {{contact.grado}} {{contact.grupo}}</q-item-label>
+
+
+          </q-item-section>
+  
+          <q-item-section side>
+           <q-badge :color="contact.online ? 'green' : 'grey' ">
+              {{ contact.online ? 'online' : 'offline'}}
+               </q-badge>
+          </q-item-section>
+        </q-item>
+  
+      
+      </q-list>
+
+    </div>
+

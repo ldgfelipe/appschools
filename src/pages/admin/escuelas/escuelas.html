@@ -1,0 +1,103 @@
+<q-page>
+    <div class="text-h4 q-mb-md">Escuelas</div>
+   
+    <q-table
+    :data="data"
+    :columns="columns"
+    :filter="filter"
+  >
+
+  <template v-slot:top-right>
+    <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+      <template v-slot:append>
+        <q-icon name="search" />
+      </template>
+    </q-input>
+  </template>
+
+
+    <template v-slot:body="props">
+         <q-tr :props="props">
+           
+          <q-td v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          >
+          {{col.value}}
+          </q-td>   
+          <q-td>
+            <q-btn class="info" @click="editaEscuela(props)">Editar</q-btn>
+          </q-td>
+        </q-tr>
+    </template>
+
+</q-table>
+
+<q-dialog
+v-model="editarescuela"
+>
+<q-card style="width: 100%; max-width: 600px;">
+  <q-card-section>
+    ID REGISTRO:<b>{{dataeditescuela.idesc}}</b>
+    <q-input outlined v-model="dataeditescuela.nombre" label="Nombre" />
+    <q-input outlined v-model="dataeditescuela.ciudad" label="Ciudad" />
+    <q-input outlined v-model="dataeditescuela.estado" label="Estado" />
+    <q-input outlined v-model="dataeditescuela.correo" label="Correo" />
+    <q-input outlined v-model="dataeditescuela.pais" label="País" />
+    <q-input outlined v-model="dataeditescuela.rep" label="Representante" />
+    <q-input outlined v-model="dataeditescuela.tel" label="Teléfono" />
+    <q-input outlined v-model="dataeditescuela.web" label="Pagina" />
+
+
+    
+    <q-file outlined v-model="imgedit" label="Logo de escuela">
+      <template v-slot:prepend>
+        <q-icon name="attach_file" />
+      </template>
+    </q-file>
+    <br /><br />
+    
+    <q-btn color="primary">Grupos</q-btn>
+
+    <q-btn color="secondary">Materias</q-btn> 
+    <q-btn class="bg-indigo-6 text-white" @click="guardarCambios()" >Guardar Cambios</q-btn>
+  </q-card-section>
+</q-card>
+</q-dialog>
+
+
+<q-dialog 
+    v-model="addescuela"
+    :maximized="maximizedToggle"
+    
+    >
+    <q-card>
+
+        <q-card-section>
+            <div class="text-h4 q-mb-md">Alta de Escuela</div>
+            <q-separator></q-separator >
+            <q-input label="Nombre de Escuela" v-model="altaEsc.nombre" ></q-input>
+            <q-input label="Ciudad" v-model="altaEsc.ciudad" ></q-input>
+            <q-input label="Estado" v-model="altaEsc.estado"></q-input>
+            <q-input label="Pais" v-model="altaEsc.pais"></q-input>
+            <q-input label="Representante" v-model="altaEsc.rep"></q-input>
+            <q-input label="Teléfono" v-model="altaEsc.tel"></q-input>
+            <q-input label="Correo de contacto" v-model="altaEsc.correo"></q-input>
+            <q-input label="Pagina Web" v-model="altaEsc.web"></q-input><br />
+<br />
+
+
+            <q-btn class="bg-indigo-6 text-white" @click="altaEscuela()" >Guardar</q-btn>
+            <q-btn class="bg-red-6 text-white" @click="addescuela=false">Cancelar</q-btn>
+
+        </q-card-section>
+
+
+    </q-card>
+</q-dialog>
+
+  <q-btn round color="primary" class="fixed" icon="add" @click="addescuela=true" />
+
+
+
+</q-page> 
